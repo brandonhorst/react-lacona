@@ -1,0 +1,51 @@
+{
+  "name": "react-lacona",
+  "version": "0.0.1",
+  "description": "React Component to provide a friendly interface for lacona",
+  "main": "lib/lacona.js",
+  "scripts": {
+    "test": "mocha test",
+    "lint": "npm run lint:lib && npm run lint:test",
+    "lint:lib": "jshint --config node_modules/lacona-util-jshint/lib.json lib",
+    "lint:test": "jshint --config node_modules/lacona-util-jshint/test.json test",
+    "validate": "npm run lint && npm run test",
+    "cover": "istanbul cover _mocha test -- -R dot && istanbul report text",
+    "coveralls": "istanbul cover _mocha test --report lcovonly -- -R dot && cat coverage/lcov.info | coveralls && rimraf ./coverage",
+    "build:demo": "browserify demo/script.js -o demo/build/script.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lacona/react-lacona.git"
+  },
+  "keywords": [
+    "react-component",
+    "lacona",
+    "react",
+    "display",
+    "command"
+  ],
+  "author": "@brandonhorst",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lacona/react-lacona/issues"
+  },
+  "homepage": "https://github.com/lacona/react-lacona",
+  "devDependencies": {
+    "browserify": "^8.1.1",
+    "chai": "^1.10.0",
+    "coveralls": "^2.11.2",
+    "istanbul": "^0.3.5",
+    "jsdom": "^3.1.0",
+    "jshint": "^2.6.0",
+    "lacona-util-jshint": "^0.2.0",
+    "mocha": "^2.1.0",
+    "normalize-css": "^2.3.1",
+    "sinon": "^1.12.2",
+    "sinon-chai": "^2.6.0"
+  },
+  "dependencies": {
+    "lacona-util-fulltext": "^0.2.0",
+    "lodash": "^3.0.0",
+    "react": "^0.12.2"
+  }
+}

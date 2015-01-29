@@ -1,0 +1,14 @@
+body {
+  color: #000;
+}
+.option div {
+  display: inline-block;
+}
+
+.highlighted {
+  color: #F00;
+}
+
+.selected {
+  font-weight: bold;
+}
