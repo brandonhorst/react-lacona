@@ -1,5 +1,5 @@
-var React = require('react');
-var reactLacona = React.createFactory(require('..'));
+var React = require('react')
+var reactLacona = React.createFactory(require('..'))
 
 var outputs = [{
   id: 0,
@@ -21,23 +21,27 @@ var outputs = [{
     ],
     completion: [{string: 'completion2', category: 'completion', input: false}]
   }
-}];
+}]
 
 var demo = React.createFactory(React.createClass({
   displayName: 'Lacona Demo',
   handleUpdate: function (newText) {
-    console.log("update: ", newText);
+    console.log('update: ', newText)
   },
-  handleDone: function (id) {
-    console.log("done: ", id);
+  handleExecute: function (id) {
+    console.log('execute: ', id)
+  },
+  handleCancel: function (id) {
+    console.log('cancel: ', id)
   },
   render: function () {
     return reactLacona({
       update: this.handleUpdate,
-      done: this.handleDone,
+      execute: this.handleExecute,
+      cancel: this.handleCancel,
       outputs: outputs
-    });
+    })
   }
-}));
+}))
 
-React.render(demo(), document.body);
+React.render(demo(), document.body)
