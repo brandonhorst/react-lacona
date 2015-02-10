@@ -210,6 +210,27 @@ describe('react-lacona', function () {
     expect(done).to.have.been.calledWith(0);
   });
 
+  it('can call done after adding an output', function (done) {
+    var compDone = sinon.spy();
+    var node = TestUtils.renderIntoDocument(reactLacona({
+      outputs: [],
+      done: compDone
+    }));
+    var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
+
+    function callback(err) {
+      expect(err).to.not.exist;
+
+      TestUtils.Simulate.keyDown(input, {keyCode: 13}); //return
+      expect(compDone).to.have.been.calledOnce;
+      expect(compDone).to.have.been.calledWith(0);
+
+      done();
+    }
+
+    node.setProps({outputs: outputs[0], done: compDone}, callback);
+  });
+
   it('does not call done with no output', function () {
     var done = sinon.spy();
     var node = TestUtils.renderIntoDocument(reactLacona({done: done}));
