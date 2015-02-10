@@ -201,7 +201,7 @@ describe('react-lacona', function () {
     var done = sinon.spy();
     var node = TestUtils.renderIntoDocument(reactLacona({
       outputs: outputs[0],
-      done: done
+      execute: done
     }));
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
     TestUtils.Simulate.keyDown(input, {keyCode: 13}); //return
@@ -214,7 +214,7 @@ describe('react-lacona', function () {
     var compDone = sinon.spy();
     var node = TestUtils.renderIntoDocument(reactLacona({
       outputs: [],
-      done: compDone
+      execute: compDone
     }));
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
 
@@ -228,12 +228,12 @@ describe('react-lacona', function () {
       done();
     }
 
-    node.setProps({outputs: outputs[0], done: compDone}, callback);
+    node.setProps({outputs: outputs[0], execute: compDone}, callback);
   });
 
   it('does not call done with no output', function () {
     var done = sinon.spy();
-    var node = TestUtils.renderIntoDocument(reactLacona({done: done}));
+    var node = TestUtils.renderIntoDocument(reactLacona({execute: done}));
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
     TestUtils.Simulate.keyDown(input, {keyCode: 13}); //return
 
@@ -244,7 +244,7 @@ describe('react-lacona', function () {
     var done = sinon.spy();
     var node = TestUtils.renderIntoDocument(reactLacona({
       outputs: outputs[0].concat(outputs[1]),
-      done: done
+      execute: done
     }));
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
     TestUtils.Simulate.keyDown(input, {keyCode: 40}); //down
