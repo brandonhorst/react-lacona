@@ -1,6 +1,6 @@
 {
   "name": "react-lacona",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "React Component to provide a friendly interface for lacona",
   "main": "lib/lacona.js",
   "scripts": {
