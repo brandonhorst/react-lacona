@@ -211,10 +211,10 @@ describe('react-lacona', function () {
   });
 
   it('can call done after adding an output', function (done) {
-    var compDone = sinon.spy();
+    var execute = sinon.spy();
     var node = TestUtils.renderIntoDocument(reactLacona({
       outputs: [],
-      execute: compDone
+      execute: execute
     }));
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
 
@@ -222,13 +222,13 @@ describe('react-lacona', function () {
       expect(err).to.not.exist;
 
       TestUtils.Simulate.keyDown(input, {keyCode: 13}); //return
-      expect(compDone).to.have.been.calledOnce;
-      expect(compDone).to.have.been.calledWith(0);
+      expect(execute).to.have.been.calledOnce;
+      expect(execute).to.have.been.calledWith(0);
 
       done();
     }
 
-    node.setProps({outputs: outputs[0], execute: compDone}, callback);
+    node.setProps({outputs: outputs[0], execute: execute}, callback);
   });
 
   it('does not call done with no output', function () {
@@ -277,6 +277,22 @@ describe('react-lacona', function () {
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
     expect(function () {
       TestUtils.Simulate.keyDown(input, {keyCode: 9}); //tab
+    }).to.not.throw(Error);
+  });
+
+  it('cancels with escape', function () {
+    var cancel = sinon.spy();
+    var node = TestUtils.renderIntoDocument(reactLacona({cancel: cancel}));
+    var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
+    TestUtils.Simulate.keyDown(input, {keyCode: 27}); //escape
+    expect(cancel).to.have.been.calledOnce;
+  });
+
+  it('escape does not break with no cancel', function () {
+    var node = TestUtils.renderIntoDocument(reactLacona());
+    var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input');
+    expect(function () {
+      TestUtils.Simulate.keyDown(input, {keyCode: 27}); //tab
     }).to.not.throw(Error);
   });
 });
