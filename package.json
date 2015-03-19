@@ -7,9 +7,7 @@
     "test": "mocha test",
     "lint": "standard",
     "validate": "npm run lint && npm run test",
-    "cover": "istanbul cover _mocha test -- -R dot && istanbul report text",
-    "coveralls": "istanbul cover _mocha test --report lcovonly -- -R dot && cat coverage/lcov.info | coveralls && rimraf ./coverage",
-    "build:demo": "mkdir demo/build && browserify demo/script.js -o demo/build/script.js"
+    "build:demo": "mkdir -p demo/build && browserify demo/script.js -o demo/build/script.js"
   },
   "repository": {
     "type": "git",
