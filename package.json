@@ -4,9 +4,10 @@
   "description": "React Component to provide a friendly interface for lacona",
   "main": "lib/lacona.js",
   "scripts": {
-    "test": "mocha test",
-    "lint": "standard",
-    "validate": "npm run lint && npm run test",
+    "pretest": "babel test --out-dir tmp",
+    "test": "mocha tmp",
+    "build": "babel src --out-dir lib",
+    "validate": "npm run build && npm run test",
     "build:demo": "mkdir -p demo/build && browserify demo/script.js -o demo/build/script.js"
   },
   "repository": {
@@ -27,20 +28,18 @@
   },
   "homepage": "https://github.com/lacona/react-lacona",
   "devDependencies": {
-    "browserify": "^8.1.3",
-    "chai": "^1.10.0",
-    "coveralls": "^2.11.2",
-    "istanbul": "^0.3.5",
-    "jsdom": "^3.1.1",
-    "mocha": "^2.1.0",
+    "babel": "^4.7.16",
+    "browserify": "^9.0.3",
+    "chai": "^2.1.2",
+    "jsdom": "^4.0.3",
+    "mocha": "^2.2.1",
     "normalize-css": "^2.3.1",
-    "sinon": "^1.12.2",
-    "sinon-chai": "^2.6.0",
-    "standard": "^2.6.0"
+    "sinon": "^1.14.1",
+    "sinon-chai": "^2.7.0"
   },
   "dependencies": {
     "lacona-util-fulltext": "^0.2.0",
-    "lodash": "^3.1.0",
-    "react": "^0.12.2"
+    "lodash": "^3.5.0",
+    "react": "^0.13.1"
   }
 }

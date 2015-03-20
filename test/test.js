@@ -1,47 +1,48 @@
-var chai = require('chai')
-var expect = chai.expect
-var jsdom = require('jsdom')
-var sinon = require('sinon')
-
 /*eslint-env mocha*/
 
-chai.use(require('sinon-chai'))
+import _ from 'lodash'
+import chai, {expect} from 'chai'
+import jsdom from 'jsdom'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+
+chai.use(sinonChai)
+
+global.document = jsdom.jsdom()
+global.window = global.document.defaultView
+global.navigator = global.window.navigator
+
+import React from 'react/addons'
+import LaconaView from '..'
+const TestUtils = React.addons.TestUtils
+
+var outputs = [{
+  match: [{string: 'match', category: 'match', input: true}],
+  suggestion: [
+    {string: 'sugg', category: 'suggestion', input: false},
+    {string: 'estion', category: 'suggestion', input: true}
+  ],
+  completion: [{string: 'completion', category: 'completion', input: false}]
+}, {
+  match: [{string: 'match2', category: 'match', input: true}],
+  suggestion: [
+    {string: 'sugg', category: 'suggestion', input: false},
+    {string: 'estion2', category: 'suggestion', input: true}
+  ],
+  completion: [{string: 'completion2', category: 'completion', input: false}]
+}]
 
 describe('react-lacona', function () {
-  var React, reactLacona, TestUtils
-  var outputs = [
-    [{id: 0, data: {
-      match: [{string: 'match', category: 'match', input: true}],
-      suggestion: [
-        {string: 'sugg', category: 'suggestion', input: false},
-        {string: 'estion', category: 'suggestion', input: true}
-      ],
-      completion: [{string: 'completion', category: 'completion', input: false}]
-    }}],
-    [{id: 1, data: {
-      match: [{string: 'match2', category: 'match', input: true}],
-      suggestion: [
-        {string: 'sugg', category: 'suggestion', input: false},
-        {string: 'estion2', category: 'suggestion', input: true}
-      ],
-      completion: [{string: 'completion2', category: 'completion', input: false}]
-    }}]
-  ]
-
-  global.document = jsdom.jsdom()
-  global.window = global.document.parentWindow
-  global.navigator = global.window.navigator
-
-  React = require('react/addons')
-  reactLacona = React.createFactory(require('..'))
-  TestUtils = React.addons.TestUtils
+  beforeEach(() => {
+    document.body.innerHTML = ''
+  })
 
   it('renders one output properly', function () {
-    var node = TestUtils.renderIntoDocument(reactLacona({outputs: outputs[0]}))
+    const node = TestUtils.renderIntoDocument(<LaconaView outputs={[outputs[0]]} />)
 
-    var matches = TestUtils.scryRenderedDOMComponentsWithClass(node, 'category-match')
-    var suggestions = TestUtils.scryRenderedDOMComponentsWithClass(node, 'category-suggestion')
-    var completions = TestUtils.scryRenderedDOMComponentsWithClass(node, 'category-completion')
+    const matches = TestUtils.scryRenderedDOMComponentsWithClass(node, 'category-match')
+    const suggestions = TestUtils.scryRenderedDOMComponentsWithClass(node, 'category-suggestion')
+    const completions = TestUtils.scryRenderedDOMComponentsWithClass(node, 'category-completion')
 
     expect(matches).to.have.length(1)
     expect(matches[0].getDOMNode().textContent).to.equal('match')
@@ -58,119 +59,71 @@ describe('react-lacona', function () {
     expect(completions[0].getDOMNode().className).to.not.match(/\bhighlighted\b/)
   })
 
-  it('can change its outputs and keep same selection (up)', function (done) {
-    var node = TestUtils.renderIntoDocument(reactLacona({outputs: outputs[0]}))
+  it('can change its outputs and keep same selection (up)', function () {
+    React.render(<LaconaView outputs={[outputs[0]]} />, document.body)
+    const node = React.render(<LaconaView outputs={outputs} />, document.body)
 
-    function callback (err) {
-      var options
-      expect(err).to.not.exist
-
-      options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
-      expect(options.children).to.have.length(2)
-      expect(options.children[0].className).to.match(/\bselected\b/)
-      expect(options.children[0].children[0].innerHTML).to.equal('match')
-      expect(options.children[1].className).to.not.match(/\bselected\b/)
-      expect(options.children[1].children[0].innerHTML).to.equal('match2')
-
-      done()
-    }
-
-    node.setProps({outputs: outputs[0].concat(outputs[1])}, callback)
+    const options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
+    expect(options.children).to.have.length(2)
+    expect(options.children[0].className).to.match(/\bselected\b/)
+    expect(options.children[0].children[0].innerHTML).to.equal('match')
+    expect(options.children[1].className).to.not.match(/\bselected\b/)
+    expect(options.children[1].children[0].innerHTML).to.equal('match2')
   })
 
-  it('can change its outputs and keep same selection (down)', function (done) {
-    var node = TestUtils.renderIntoDocument(reactLacona({outputs: outputs[0]}))
+  it('can change its outputs and keep same selection (down)', function () {
+    React.render(<LaconaView outputs={[outputs[1]]} />, document.body)
+    const node = React.render(<LaconaView outputs={outputs} />, document.body)
 
-    function callback (err) {
-      var options
-      expect(err).to.not.exist
-
-      options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
-      expect(options.children).to.have.length(2)
-      expect(options.children[0].className).to.not.match(/\bselected\b/)
-      expect(options.children[0].children[0].innerHTML).to.equal('match2')
-      expect(options.children[1].className).to.match(/\bselected\b/)
-      expect(options.children[1].children[0].innerHTML).to.equal('match')
-
-      done()
-    }
-
-    node.setProps({outputs: outputs[1].concat(outputs[0])}, callback)
+    const options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
+    expect(options.children).to.have.length(2)
+    expect(options.children[0].className).to.not.match(/\bselected\b/)
+    expect(options.children[0].children[0].innerHTML).to.equal('match')
+    expect(options.children[1].className).to.match(/\bselected\b/)
+    expect(options.children[1].children[0].innerHTML).to.equal('match2')
   })
 
-  it('can remove an output and keep same selection', function (done) {
-    var node = TestUtils.renderIntoDocument(reactLacona({outputs: outputs[0].concat(outputs[1])}))
+  it('can remove an output and keep same selection', function () {
+    React.render(<LaconaView outputs={outputs} />, document.body)
+    const node = React.render(<LaconaView outputs={[outputs[1]]} />, document.body)
 
-    function callback (err) {
-      var options
-      expect(err).to.not.exist
-
-      options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
-      expect(options.children).to.have.length(1)
-      expect(options.children[0].className).to.match(/\bselected\b/)
-      expect(options.children[0].children[0].innerHTML).to.equal('match2')
-
-      done()
-    }
-
-    node.setProps({outputs: outputs[1]}, callback)
+    const options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
+    expect(options.children).to.have.length(1)
+    expect(options.children[0].className).to.match(/\bselected\b/)
+    expect(options.children[0].children[0].innerHTML).to.equal('match2')
   })
 
-  it('can remove an output and pick a new selection', function (done) {
-    var node = TestUtils.renderIntoDocument(reactLacona({outputs: outputs[0].concat(outputs[1])}))
+  it('can remove an output and pick a new selection', function () {
+    React.render(<LaconaView outputs={outputs} />, document.body)
+    var node = React.render(<LaconaView outputs={[outputs[0]]} />, document.body)
 
-    function callback (err) {
-      var options
-      expect(err).to.not.exist
-
-      options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
-      expect(options.children).to.have.length(1)
-      expect(options.children[0].className).to.match(/\bselected\b/)
-      expect(options.children[0].children[0].innerHTML).to.equal('match')
-
-      done()
-    }
-
-    node.setProps({outputs: outputs[0]}, callback)
+    const options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
+    expect(options.children).to.have.length(1)
+    expect(options.children[0].className).to.match(/\bselected\b/)
+    expect(options.children[0].children[0].innerHTML).to.equal('match')
   })
 
-  it('can remove all outputs', function (done) {
-    var node = TestUtils.renderIntoDocument(reactLacona({outputs: outputs[0]}))
+  it('can remove all outputs', function () {
+    React.render(<LaconaView outputs={[outputs[0]]} />, document.body)
+    const node = React.render(<LaconaView outputs={[]} />, document.body)
 
-    function callback (err) {
-      var options
-      expect(err).to.not.exist
-
-      options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
-      expect(options.children).to.have.length(0)
-
-      done()
-    }
-
-    node.setProps({outputs: []}, callback)
+    const options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
+    expect(options.children).to.have.length(0)
   })
 
-  it('can add an output', function (done) {
-    var node = TestUtils.renderIntoDocument(reactLacona({outputs: []}))
+  it('can add an output', function () {
+    React.render(<LaconaView outputs={[]} />, document.body)
+    const node = React.render(<LaconaView outputs={[outputs[0]]} />, document.body)
 
-    function callback (err) {
-      var options
-      expect(err).to.not.exist
-
-      options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
-      expect(options.children).to.have.length(1)
-      expect(options.children[0].className).to.match(/\bselected\b/)
-      expect(options.children[0].children[0].innerHTML).to.equal('match')
-
-      done()
-    }
-
-    node.setProps({outputs: outputs[0]}, callback)
+    const options = TestUtils.findRenderedDOMComponentWithClass(node, 'options').getDOMNode()
+    expect(options.children).to.have.length(1)
+    expect(options.children[0].className).to.match(/\bselected\b/)
+    expect(options.children[0].children[0].innerHTML).to.equal('match')
   })
 
   it('passes input to update', function () {
     var update = sinon.spy()
-    var node = TestUtils.renderIntoDocument(reactLacona({update: update}))
+    var node = TestUtils.renderIntoDocument(<LaconaView update={update} />)
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     TestUtils.Simulate.change(input, {target: {value: 'test'}})
 
@@ -179,7 +132,7 @@ describe('react-lacona', function () {
   })
 
   it('does not break if methods are not provided', function () {
-    var node = TestUtils.renderIntoDocument(reactLacona())
+    var node = TestUtils.renderIntoDocument(<LaconaView />)
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
 
     expect(function () {
@@ -192,7 +145,7 @@ describe('react-lacona', function () {
   })
 
   it('does not break on keystrokes', function () {
-    var node = TestUtils.renderIntoDocument(reactLacona())
+    var node = TestUtils.renderIntoDocument(<LaconaView />)
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     expect(function () {
       TestUtils.Simulate.keyDown(input, {keyCode: 65}) // return
@@ -201,10 +154,9 @@ describe('react-lacona', function () {
 
   it('calls done on return', function () {
     var done = sinon.spy()
-    var node = TestUtils.renderIntoDocument(reactLacona({
-      outputs: outputs[0],
-      execute: done
-    }))
+    var node = TestUtils.renderIntoDocument(
+      <LaconaView outputs={[outputs[0]]} execute={done} />
+    )
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     TestUtils.Simulate.keyDown(input, {keyCode: 13}) // return
 
@@ -212,30 +164,20 @@ describe('react-lacona', function () {
     expect(done).to.have.been.calledWith(0)
   })
 
-  it('can call done after adding an output', function (done) {
-    var execute = sinon.spy()
-    var node = TestUtils.renderIntoDocument(reactLacona({
-      outputs: [],
-      execute: execute
-    }))
-    var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
+  it('can call done after adding an output', () => {
+    const execute = sinon.spy()
+    React.render(<LaconaView outputs={[]} execute={execute} />, document.body)
+    const node = React.render(<LaconaView outputs={[outputs[0]]} execute={execute} />, document.body)
+    const input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
 
-    function callback (err) {
-      expect(err).to.not.exist
-
-      TestUtils.Simulate.keyDown(input, {keyCode: 13}) // return
-      expect(execute).to.have.been.calledOnce
-      expect(execute).to.have.been.calledWith(0)
-
-      done()
-    }
-
-    node.setProps({outputs: outputs[0], execute: execute}, callback)
+    TestUtils.Simulate.keyDown(input, {keyCode: 13}) // return
+    expect(execute).to.have.been.calledOnce
+    expect(execute).to.have.been.calledWith(0)
   })
 
   it('does not call done with no output', function () {
     var done = sinon.spy()
-    var node = TestUtils.renderIntoDocument(reactLacona({execute: done}))
+    var node = TestUtils.renderIntoDocument(<LaconaView execute={done} />)
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     TestUtils.Simulate.keyDown(input, {keyCode: 13}) // return
 
@@ -244,10 +186,9 @@ describe('react-lacona', function () {
 
   it('selects other outputs with down and up', function () {
     var done = sinon.spy()
-    var node = TestUtils.renderIntoDocument(reactLacona({
-      outputs: outputs[0].concat(outputs[1]),
-      execute: done
-    }))
+    var node = TestUtils.renderIntoDocument(
+      <LaconaView outputs={outputs} execute={done} />
+    )
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     TestUtils.Simulate.keyDown(input, {keyCode: 40}) // down
     TestUtils.Simulate.keyDown(input, {keyCode: 13}) // return
@@ -262,10 +203,9 @@ describe('react-lacona', function () {
 
   it('completes the output with tab', function () {
     var update = sinon.spy()
-    var node = TestUtils.renderIntoDocument(reactLacona({
-      outputs: outputs[0],
-      update: update
-    }))
+    var node = TestUtils.renderIntoDocument(
+      <LaconaView outputs={[outputs[0]]} update={update} />
+    )
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     TestUtils.Simulate.keyDown(input, {keyCode: 9}) // tab
 
@@ -274,7 +214,7 @@ describe('react-lacona', function () {
   })
 
   it('tab does not break with no output', function () {
-    var node = TestUtils.renderIntoDocument(reactLacona())
+    var node = TestUtils.renderIntoDocument(<LaconaView />)
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     expect(function () {
       TestUtils.Simulate.keyDown(input, {keyCode: 9}) // tab
@@ -283,14 +223,14 @@ describe('react-lacona', function () {
 
   it('cancels with escape', function () {
     var cancel = sinon.spy()
-    var node = TestUtils.renderIntoDocument(reactLacona({cancel: cancel}))
+    var node = TestUtils.renderIntoDocument(<LaconaView cancel={cancel} />)
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     TestUtils.Simulate.keyDown(input, {keyCode: 27}) // escape
     expect(cancel).to.have.been.calledOnce
   })
 
   it('escape does not break with no cancel', function () {
-    var node = TestUtils.renderIntoDocument(reactLacona())
+    var node = TestUtils.renderIntoDocument(<LaconaView />)
     var input = TestUtils.findRenderedDOMComponentWithTag(node, 'input')
     expect(function () {
       TestUtils.Simulate.keyDown(input, {keyCode: 27}) // tab
