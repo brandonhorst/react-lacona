@@ -3,9 +3,9 @@ import React from 'react'
 export default class LaconaOption extends React.Component {
   render() {
     const divs = ['match', 'suggestion', 'completion'].map(type => {
-      return this.props.option[type].map(item => {
+      return this.props.option[type].map((item, index) => {
         const className = `${type} category-${item.category}${item.input ? ' highlighted' : ''}`
-        return <div className={className}>{item.string}</div>
+        return <div className={className} key={type + index}>{item.string}</div>
       })
     }).reduce((prev, current) => prev.concat(current)) //join
 
