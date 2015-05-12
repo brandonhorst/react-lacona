@@ -28,18 +28,18 @@
   },
   "homepage": "https://github.com/lacona/react-lacona",
   "devDependencies": {
-    "babel": "^4.7.16",
-    "browserify": "^9.0.3",
-    "chai": "^2.1.2",
-    "jsdom": "^4.0.3",
-    "mocha": "^2.2.1",
+    "babel": "^5.1.13",
+    "browserify": "^9.0.8",
+    "chai": "^2.3.0",
+    "jsdom": "^5.1.0",
+    "mocha": "^2.2.4",
     "normalize-css": "^2.3.1",
     "sinon": "^1.14.1",
     "sinon-chai": "^2.7.0"
   },
   "dependencies": {
     "lacona-util-fulltext": "^0.2.0",
-    "lodash": "^3.5.0",
-    "react": "^0.13.1"
+    "lodash": "^3.7.0",
+    "react": "^0.13.2"
   }
 }
