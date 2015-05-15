@@ -36,52 +36,39 @@ export default class LaconaView extends React.Component {
   constructor(props) {
     super(props)
 
-    const hasOutputs = this.props.outputs.length > 0
+    const hasOutputs = props.length > 0
     this.state = {
+      userInput: props.initialInput || '',
       selection: hasOutputs ? 0 : -1
+      // selectedKey: hasOutputs ? fulltext.all(this.props.outputs[0]) : ''
     }
-  }
-
-  getSelectionNumberInPhraseList (number) {
-    let totalCount = 0
-    let itemNumber
-
-    const phraseIndex = _.findIndex(this.props.outputs, phraseList => {
-      const thisCount = getPhraseListItemCount(phraseList)
-      if (totalCount + thisCount > number) {
-        itemNumber = number - totalCount
-        return true
-      }
-
-      totalCount += thisCount
-      return false
-    })
-
-    return {phraseIndex, itemNumber}
-  }
-
-  getAllWords (number) {
-    const {phraseIndex, itemNumber} = this.getSelectionNumberInPhraseList(number)
-
-    return _.chain(this.props.outputs[phraseIndex])
-      .map(phrase => {
-        if (phrase.placeholder) return phrase
-        if (phrase.words) return phrase.words
-        if (phrase.items) return phrase.items[itemNumber]
-        return []
-      })
-      .flatten()
-      .value()
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.outputs !== this.props.outputs) {
-      if (nextProps.outputs.length > 0) {
-        this.setSelection(0)
-      } else {
-        this.setState({selection: -1})
-      }
-    }
+    const hasOutputs = nextProps.outputs.length > 0
+    this.setState({selection: hasOutputs ? 0 : -1})
+
+    // if (nextProps.outputs.length > 0) {
+
+      // if something was selected in the past
+      // if (this.state.selection > -1) {
+    //     newSelection = _.findIndex(nextProps.outputs, output => fulltext.all(output) === this.state.selectedKey)
+    //     if (newSelection > -1) {
+    //       this.setState({selection: newSelection})
+    //       return
+    //     }
+    //   }
+    //   newSelection = bound(this.state.selection - 1, nextProps.outputs.length)
+    //   this.setState({
+    //     selection: newSelection,
+    //     selectedKey: fulltext.all(nextProps.outputs[newSelection])
+    //   })
+    // } else {
+    //   this.setState({
+    //     selection: -1,
+    //     selectedKey: ''
+    //   })
+    // }
   }
 
   componentDidMount() {
@@ -92,39 +79,32 @@ export default class LaconaView extends React.Component {
     this.props.change()
   }
 
-  focusBar() {
-    this.refs.input.focus()
-  }
+  completeSelection() {
+    if (this.state.selection > -1) {
+      const result = this.props.outputs[this.state.selection]
+      const newString = _.chain(result.match.concat(result.suggestion, result.completion))
+        .takeWhile(item => !item.placeholder)
+        .map('string')
+        .join('')
+        .value()
 
-  moveSelection(steps) {
-    const total = getTotalSelectables(this.props.outputs)
-    const selection = bound(this.state.selection + steps, total)
-    this.setSelection(selection)
-  }
-
-  setSelection(selection) {
-    this.setState({selection})
-    this.props.select(selection)
-  }
-
-  complete(selection = this.state.selection, wordList) {
-    if (selection > -1) {
-      const realWordList = wordList || this.getAllWords(selection)
-      const newString = toPlaceholder(realWordList)
-      if (newString !== this.props.userInput) {
-        this.update(newString)
-      }
+      this.update(newString)
     }
   }
 
-  execute(selection = this.state.selection) {
-    if (selection > -1) {
-      const wordList = this.getAllWords(selection)
-      if (hasPlaceholder(wordList)) {
-        this.complete(selection, wordList)
+  moveSelection(steps) {
+    const selection = bound(this.state.selection + steps, this.props.outputs.length)
+    this.setState({selection})
+  }
+
+  execute() {
+    if (this.state.selection > -1) {
+      const result = this.props.outputs[this.state.selection]
+      if (_.some(result.match.concat(result.suggestion, result.completion), 'placeholder')) {
+        this.completeSelection()
       } else {
-        this.props.execute(selection)
-        // this.refs.input.blur() //I am commenting this out, but www.lacona.io needs it
+        this.setState({userInput: ''})
+        this.props.execute(this.state.selection)
       }
     }
   }
@@ -142,16 +122,16 @@ export default class LaconaView extends React.Component {
 
     return (
       <div className='lacona-view'>
-        <LaconaInput ref='input' update={this.update.bind(this)}
-          completeSelection={this.complete.bind(this)}
+        <LaconaInput
+          update={this.update.bind(this)}
+          prefix={this.props.prefix}
+          suffix={this.props.suffix}
+          completeSelection={this.completeSelection.bind(this)}
           moveSelection={this.moveSelection.bind(this)}
-          focus={this.props.focus} blur={this.props.blur}
-          userInput={this.props.userInput}
-          execute={this.execute.bind(this)} cancel={this.cancel.bind(this)}
-          placeholder={this.props.placeholder} autoFocus={this.props.autoFocus} />
-        <LaconaOptions outputs={this.props.outputs} selectedPhraseIndex={phraseIndex}
-          selectedItemNumber={itemNumber}
-          select={this.setSelection.bind(this)} execute={this.execute.bind(this)}/>
+          userInput={this.state.userInput}
+          execute={this.execute.bind(this)}
+          cancel={this.cancel.bind(this)} />
+        <LaconaOptions outputs={this.props.outputs} selection={this.state.selection} />
       </div>
     )
   }

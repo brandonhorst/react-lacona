@@ -23,18 +23,7 @@ export default class Options extends React.Component {
   //
   render() {
     const divs = this.props.outputs.map((option, index) => {
-      const execute = () => {this.props.execute(index)}
-      const select = () => {this.props.select(index)}
-      const selected = index === this.props.selectedPhraseIndex
-
-      return <Option
-        execute={execute}
-        select={select}
-        key={index}
-        selectedItemNumber={this.props.selectedItemNumber}
-        selected={selected}
-        option={option}
-      />
+      return <Option key={index} selected={index === this.props.selection} option={option} />
     })
 
     return <div className='options' ref='options'>{divs}</div>

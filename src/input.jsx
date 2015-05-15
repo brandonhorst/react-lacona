@@ -47,10 +47,14 @@ export default class LaconaInput extends React.Component {
   }
 
   render() {
-    return <input type='text' autoCorrect={false} spellCheck={false}
-      onFocus={this.props.focus} onBlur={this.props.blur}
-      autoCapitalize={false} className='input' value={this.props.userInput}
-      onChange={this.change.bind(this)} onKeyDown={this.keyDown.bind(this)}
-      placeholder={this.props.placeholder} ref='input' />
+    return (
+      <div className='input'>
+        <div className={`prefix${this.props.prefix ? '' : ' hidden'}`}>{this.props.prefix}</div>
+        <input type='text' autoCorrect={false} spellCheck={false}
+          autoCapitalize={false} className='true-input' value={this.props.userInput}
+          onChange={this.change.bind(this)} onKeyDown={this.keyDown.bind(this)} />
+        <div className={`suffix${this.props.suffix ? '' : ' hidden'}`}>{this.props.suffix}</div>
+      </div>
+    )
   }
 }
