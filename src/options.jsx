@@ -6,7 +6,7 @@ import fulltext from 'lacona-util-fulltext'
 export default class Options extends React.Component {
   render() {
     const divs = this.props.outputs.map((option, index) => {
-      return <Option key={fulltext.all(option)} selected={index === this.props.selection}
+      return <Option key={index} selected={index === this.props.selection}
         option={option} />
     })
 

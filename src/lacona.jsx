@@ -13,37 +13,39 @@ export default class LaconaView extends React.Component {
   constructor(props) {
     super(props)
 
-    const hasOutputs = this.props.outputs.length > 0
+    const hasOutputs = props.length > 0
     this.state = {
-      userInput: this.props.initialInput || '',
-      selection: hasOutputs ? 0 : -1,
-      selectedKey: hasOutputs ? fulltext.all(this.props.outputs[0]) : ''
+      userInput: props.initialInput || '',
+      selection: hasOutputs ? 0 : -1
+      // selectedKey: hasOutputs ? fulltext.all(this.props.outputs[0]) : ''
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    let newSelection
-    // if there are outputs
-    if (nextProps.outputs.length > 0) {
+    const hasOutputs = nextProps.outputs.length > 0
+    this.setState({selection: hasOutputs ? 0 : -1})
+
+    // if (nextProps.outputs.length > 0) {
+
       // if something was selected in the past
-      if (this.state.selection > -1) {
-        newSelection = _.findIndex(nextProps.outputs, output => fulltext.all(output) === this.state.selectedKey)
-        if (newSelection > -1) {
-          this.setState({selection: newSelection})
-          return
-        }
-      }
-      newSelection = bound(this.state.selection - 1, nextProps.outputs.length)
-      this.setState({
-        selection: newSelection,
-        selectedKey: fulltext.all(nextProps.outputs[newSelection])
-      })
-    } else {
-      this.setState({
-        selection: -1,
-        selectedKey: ''
-      })
-    }
+      // if (this.state.selection > -1) {
+    //     newSelection = _.findIndex(nextProps.outputs, output => fulltext.all(output) === this.state.selectedKey)
+    //     if (newSelection > -1) {
+    //       this.setState({selection: newSelection})
+    //       return
+    //     }
+    //   }
+    //   newSelection = bound(this.state.selection - 1, nextProps.outputs.length)
+    //   this.setState({
+    //     selection: newSelection,
+    //     selectedKey: fulltext.all(nextProps.outputs[newSelection])
+    //   })
+    // } else {
+    //   this.setState({
+    //     selection: -1,
+    //     selectedKey: ''
+    //   })
+    // }
   }
 
   componentDidMount() {
@@ -56,8 +58,12 @@ export default class LaconaView extends React.Component {
 
   completeSelection() {
     if (this.state.selection > -1) {
-      const newString = fulltext.match(this.props.outputs[this.state.selection]) +
-        fulltext.suggestion(this.props.outputs[this.state.selection])
+      const result = this.props.outputs[this.state.selection]
+      const newString = _.chain(result.match.concat(result.suggestion, result.completion))
+        .takeWhile(item => !item.placeholder)
+        .map('string')
+        .join('')
+        .value()
 
       this.update(newString)
     }
@@ -65,16 +71,18 @@ export default class LaconaView extends React.Component {
 
   moveSelection(steps) {
     const selection = bound(this.state.selection + steps, this.props.outputs.length)
-    this.setState({
-      selection: selection,
-      selectedKey: fulltext.all(this.props.outputs[selection])
-    })
+    this.setState({selection})
   }
 
   execute() {
     if (this.state.selection > -1) {
-      this.setState({userInput: ""})
-      this.props.execute(this.state.selection)
+      const result = this.props.outputs[this.state.selection]
+      if (_.some(result.match.concat(result.suggestion, result.completion), 'placeholder')) {
+        this.completeSelection()
+      } else {
+        this.setState({userInput: ''})
+        this.props.execute(this.state.selection)
+      }
     }
   }
 
@@ -91,11 +99,15 @@ export default class LaconaView extends React.Component {
   render() {
     return (
       <div className='lacona-view'>
-        <LaconaInput update={this.update.bind(this)}
+        <LaconaInput
+          update={this.update.bind(this)}
+          prefix={this.props.prefix}
+          suffix={this.props.suffix}
           completeSelection={this.completeSelection.bind(this)}
           moveSelection={this.moveSelection.bind(this)}
           userInput={this.state.userInput}
-          execute={this.execute.bind(this)} cancel={this.cancel.bind(this)} />
+          execute={this.execute.bind(this)}
+          cancel={this.cancel.bind(this)} />
         <LaconaOptions outputs={this.props.outputs} selection={this.state.selection} />
       </div>
     )
