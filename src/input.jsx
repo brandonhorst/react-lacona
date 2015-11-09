@@ -15,11 +15,31 @@ export default class LaconaInput extends React.Component {
     React.findDOMNode(this.refs.input).focus()
   }
 
+  focusEnd () {
+    const elem = React.findDOMNode(this.refs.input)
+    const pos = this.props.userInput.length
+
+    if (elem.createTextRange) {
+      const range = elem.createTextRange();
+      range.move('character', pos);
+      range.select();
+    } else {
+      if(elem.selectionStart) {
+        elem.focus();
+        elem.setSelectionRange(pos, pos);
+      } else {
+        elem.focus();
+      }
+    }
+    elem.scrollLeft = elem.scrollWidth //just pretty big
+  }
+
   blur() {
     React.findDOMNode(this.refs.input).blur()
   }
 
   keyDown(e) {
+    this.props.userInteracted()
     if (e.keyCode === 9) { // tab
       this.props.completeSelection()
     } else if (e.keyCode === 38) { // up
@@ -27,8 +47,6 @@ export default class LaconaInput extends React.Component {
     } else if (e.keyCode === 40) { // down
       this.props.moveSelection(1)
     } else if (e.keyCode === 13) { // return
-      e.preventDefault()
-      e.stopPropagation()
       this.props.execute()
     } else if (e.keyCode === 27) { // escape
       this.props.cancel()
@@ -39,6 +57,8 @@ export default class LaconaInput extends React.Component {
       } else {
         return
       }
+    } else if (e.altKey && e.keyCode >= 49 && e.keyCode <= 57) {
+      this.props.execute(e.keyCode - 49)
     } else {
       return
     }
@@ -47,14 +67,20 @@ export default class LaconaInput extends React.Component {
   }
 
   render() {
-    return (
-      <div className='input'>
-        <div className={`prefix${this.props.prefix ? '' : ' hidden'}`}>{this.props.prefix}</div>
-        <input type='text' autoCorrect={false} spellCheck={false}
-          autoCapitalize={false} className='true-input' value={this.props.userInput}
-          onChange={this.change.bind(this)} onKeyDown={this.keyDown.bind(this)} />
-        <div className={`suffix${this.props.suffix ? '' : ' hidden'}`}>{this.props.suffix}</div>
-      </div>
-    )
+    return <input
+      type='text'
+      className='input'
+      ref='input'
+      tabIndex={this.props.tabIndex}
+      autoCorrect={false}
+      spellCheck={false}
+      autoCapitalize={false}
+      value={this.props.userInput}
+      onChange={this.change.bind(this)}
+      onKeyDown={this.keyDown.bind(this)}
+      onFocus={this.props.onFocus}
+      onBlur={this.props.onBlur}
+      onClick={this.props.userInteracted}
+      placeholder={this.props.placeholder} />
   }
 }

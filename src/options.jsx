@@ -1,7 +1,6 @@
 import React from 'react'
 
 import Option from './option'
-import fulltext from 'lacona-util-fulltext'
 
 export default class Options extends React.Component {
   // componentDidUpdate() {
@@ -21,11 +20,35 @@ export default class Options extends React.Component {
   //   }
   // }
   //
+
+  getOption (index) {
+    return this.refs[index]
+  }
+
   render() {
     const divs = this.props.outputs.map((option, index) => {
-      return <Option key={index} selected={index === this.props.selection} option={option} />
+      const select = () => this.props.select(index)
+      const execute = () => this.props.execute(index)
+
+      const hint = this.props.showHints ? (
+        index === this.props.selection ?
+          '↩' :
+          (index < 9 ? `⌥${index + 1}` : '')
+        ) : ''
+
+
+      return <Option
+        ref={index}
+        key={index}
+        selected={index === this.props.selection}
+        option={option}
+        select={select}
+        execute={execute}
+        onMouseDown={this.props.onMouseDown}
+        onMouseUp={this.props.onMouseUp}
+        hint={hint}  />
     })
 
-    return <div className='options' ref='options'>{divs}</div>
+    return divs.length ? <div className='options' ref='options'>{divs}</div> : null
   }
 }
