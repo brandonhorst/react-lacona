@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import {findDOMNode} from 'react-dom'
 
 class Placeholder extends React.Component {
   render () {
@@ -47,8 +48,8 @@ export default class LaconaOption extends React.Component {
   }
 
   componentDidUpdate (nextProps = {}) {
-    const words = React.findDOMNode(this.refs.words)
-    const descs = React.findDOMNode(this.refs.descriptors)
+    const words = findDOMNode(this.refs.words)
+    const descs = findDOMNode(this.refs.descriptors)
     const wordsRect = words.getBoundingClientRect()
 
     const all = _.zip(_.toArray(words.children), _.toArray(descs.children))

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import {findDOMNode} from 'react-dom'
 
 import LaconaOptions from './options'
 import LaconaInput from './input'
@@ -31,11 +32,11 @@ export default class LaconaView extends React.Component {
 
   componentDidUpdate () {
     if (this.state.selection > -1 && !this.setByMouse) {
-      const options = React.findDOMNode(this.refs.options)
+      const options = findDOMNode(this.refs.options)
       const optionsRect = options.getBoundingClientRect()
       const optionReact = this.refs.options.getOption(this.state.selection)
       if (optionReact) {
-        const selectedRect = React.findDOMNode(optionReact).getBoundingClientRect()
+        const selectedRect = findDOMNode(optionReact).getBoundingClientRect()
         if (selectedRect.top < optionsRect.top) {
           options.scrollTop -= (optionsRect.top - selectedRect.top)
         } else if (selectedRect.bottom > optionsRect.bottom) {
@@ -160,13 +161,13 @@ export default class LaconaView extends React.Component {
 
 LaconaView.defaultProps = {
   outputs: [],
-  update: function () {},
-  cancel: function () {},
-  change: function () {},
-  execute: function () {},
-  select: function () {},
-  onFocus: function () {},
-  onBlur: function () {},
-  userInteracted: function () {},
-  clearPrefix: function () {}
+  update () {},
+  cancel () {},
+  change () {},
+  execute () {},
+  select () {},
+  onFocus () {},
+  onBlur () {},
+  userInteracted () {},
+  clearPrefix () {}
 }

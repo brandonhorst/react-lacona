@@ -1,9 +1,10 @@
 import React from 'react'
+import {findDOMNode} from 'react-dom'
 
 export default class LaconaInput extends React.Component {
   componentDidMount() {
     if (this.props.autoFocus) {
-      React.findDOMNode(this).focus()
+      findDOMNode(this).focus()
     }
   }
 
@@ -12,11 +13,11 @@ export default class LaconaInput extends React.Component {
   }
 
   focus() {
-    React.findDOMNode(this.refs.input).focus()
+    findDOMNode(this.refs.input).focus()
   }
 
   focusEnd () {
-    const elem = React.findDOMNode(this.refs.input)
+    const elem = findDOMNode(this.refs.input)
     const pos = this.props.userInput.length
 
     if (elem.createTextRange) {
@@ -35,7 +36,7 @@ export default class LaconaInput extends React.Component {
   }
 
   blur() {
-    React.findDOMNode(this.refs.input).blur()
+    findDOMNode(this.refs.input).blur()
   }
 
   keyDown(e) {
@@ -51,7 +52,7 @@ export default class LaconaInput extends React.Component {
     } else if (e.keyCode === 27) { // escape
       this.props.cancel()
     } else if (e.keyCode === 39) { //right
-      const node = React.findDOMNode(this.refs.input)
+      const node = findDOMNode(this.refs.input)
       if ((node.selectionStart === node.selectionEnd) && (node.selectionStart === this.props.userInput.length)) {
         this.props.completeSelection()
       } else {

@@ -8,7 +8,7 @@
     "test": "mocha tmp",
     "build": "babel src --out-dir lib",
     "validate": "npm run build && npm run test",
-    "build:demo": "mkdir -p demo/build && browserify demo/script.js -o demo/build/script.js"
+    "build:demo": "mkdir -p demo/build && browserify demo/script.js -t babelify -o demo/build/script.js"
   },
   "repository": {
     "type": "git",
@@ -28,17 +28,22 @@
   },
   "homepage": "https://github.com/lacona/react-lacona",
   "devDependencies": {
-    "babel": "^5.8.23",
-    "browserify": "^11.1.0",
-    "chai": "^3.2.0",
-    "jsdom": "^6.5.0",
-    "mocha": "^2.3.2",
+    "babel": "^5.8.29",
+    "babelify": "^6.4.0",
+    "browserify": "^12.0.1",
+    "chai": "^3.4.1",
+    "jsdom": "^7.0.2",
+    "lacona": "^0.30.0",
+    "lacona-phrase": "^0.7.0",
+    "lacona-utils": "0.0.1",
+    "mocha": "^2.3.3",
     "normalize-css": "^2.3.1",
-    "sinon": "^1.16.1",
+    "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0"
   },
   "dependencies": {
     "lodash": "^3.10.1",
-    "react": "^0.13.3"
+    "react": "^0.14.2",
+    "react-dom": "^0.14.2"
   }
 }
