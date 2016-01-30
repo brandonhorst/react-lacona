@@ -81,8 +81,8 @@ export class LaconaView extends React.Component {
       } else {
         this.update('')
         this.setState({showHints: false})
-        this.props.onBlur()
         this.props.execute(index)
+        this.props.onBlur()
       }
     }
   }
