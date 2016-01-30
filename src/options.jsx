@@ -1,28 +1,25 @@
+import _ from 'lodash'
 import React from 'react'
 
-import Option from './option'
+import { Option } from './option'
 
-export default class Options extends React.Component {
-  // componentDidUpdate() {
-  //   const scrolledDiv = React.findDOMNode(this.refs.options)
-  //   const scrolledAmount = scrolledDiv.scrollTop
-  //   const scrollHeight = 400
-  //
-  //   const selectedDiv = React.findDOMNode(this.refs.selection)
-  //   const divHeight = 40
-  //   const divPos = this.props.selection * 40
-  //
-  //
-  //   if (divPos < scrolledAmount) {
-  //     scrolledDiv.scrollTop = divPos
-  //   } else if (divPos > scrollHeight + scrolledAmount - divHeight) {
-  //     scrolledDiv.scrollTop = divPos - (scrollHeight - divHeight)
-  //   }
-  // }
-  //
+export class Options extends React.Component {
+  constructor () {
+    super()
+    this.options = []
+    this.coords = [0, 0]
+  }
 
   getOption (index) {
-    return this.refs[index]
+    return this.options[index]
+  }
+
+  mouseMoved (coords) {
+    return coords[0] !== this.coords[0] || coords[1] !== this.coords[1]
+  }
+
+  handleMouseMove (e) {
+    this.coords = [e.pageX, e.pageY]
   }
 
   render() {
@@ -38,9 +35,10 @@ export default class Options extends React.Component {
 
 
       return <Option
-        ref={index}
+        ref={c => this.options[index] = c}
         key={index}
         selected={index === this.props.selection}
+        mouseMoved={this.mouseMoved.bind(this)}
         option={option}
         select={select}
         execute={execute}
@@ -49,6 +47,6 @@ export default class Options extends React.Component {
         hint={hint}  />
     })
 
-    return divs.length ? <div className='options' ref='options'>{divs}</div> : null
+    return divs.length ? <div className='options' onMouseMove={this.handleMouseMove.bind(this)}>{divs}</div> : null
   }
 }

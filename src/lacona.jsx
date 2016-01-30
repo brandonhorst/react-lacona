@@ -1,15 +1,17 @@
 import _ from 'lodash'
 import React from 'react'
-import {findDOMNode} from 'react-dom'
+import { findDOMNode } from 'react-dom'
 
-import LaconaOptions from './options'
-import LaconaInput from './input'
+import { Options } from './options'
+import { Input } from './input'
 
 function bound (number, max) {
   return Math.max(Math.min(number, max - 1), 0)
 }
 
-export default class LaconaView extends React.Component {
+export { hashArgument } from './option'
+
+export class LaconaView extends React.Component {
   constructor (props) {
     super(props)
 
@@ -23,7 +25,7 @@ export default class LaconaView extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     const hasOutputs = nextProps.outputs.length > 0
-    this.setState({selection: hasOutputs ? 0 : -1})
+    this.setState({selection: hasOutputs ? bound(this.state.selection, nextProps.outputs.length) : -1})
   }
 
   componentDidMount () {
@@ -32,15 +34,15 @@ export default class LaconaView extends React.Component {
 
   componentDidUpdate () {
     if (this.state.selection > -1 && !this.setByMouse) {
-      const options = findDOMNode(this.refs.options)
-      const optionsRect = options.getBoundingClientRect()
-      const optionReact = this.refs.options.getOption(this.state.selection)
-      if (optionReact) {
-        const selectedRect = findDOMNode(optionReact).getBoundingClientRect()
+      const optionsDOM = findDOMNode(this.options)
+      const optionsRect = optionsDOM.getBoundingClientRect()
+      const option = this.options.getOption(this.state.selection)
+      if (option) {
+        const selectedRect = findDOMNode(option).getBoundingClientRect()
         if (selectedRect.top < optionsRect.top) {
-          options.scrollTop -= (optionsRect.top - selectedRect.top)
+          optionsDOM.scrollTop -= (optionsRect.top - selectedRect.top)
         } else if (selectedRect.bottom > optionsRect.bottom) {
-          options.scrollTop += (selectedRect.bottom - optionsRect.bottom)
+          optionsDOM.scrollTop += (selectedRect.bottom - optionsRect.bottom)
         }
       }
     }
@@ -75,7 +77,7 @@ export default class LaconaView extends React.Component {
 
       if (_.some(result.words, 'placeholder')) {
         this.completeSelection(index)
-        this.refs.input.focusEnd()
+        this.input.focusEnd()
       } else {
         this.update('')
         this.setState({showHints: false})
@@ -100,7 +102,7 @@ export default class LaconaView extends React.Component {
   }
 
   focusEnd () {
-    this.refs.input.focusEnd()
+    this.input.focusEnd()
   }
 
   onFocus (event) {
@@ -124,14 +126,14 @@ export default class LaconaView extends React.Component {
   }
 
   blur () {
-    this.refs.input.blur()
+    this.input.blur()
   }
 
   render () {
     return (
       <div className='lacona-view'>
-        <LaconaInput
-          ref='input'
+        <Input
+          ref={c => this.input = c}
           update={this.update.bind(this)}
           prefix={this.props.prefix}
           suffix={this.props.suffix}
@@ -145,8 +147,8 @@ export default class LaconaView extends React.Component {
           onBlur={this.onBlur.bind(this)}
           userInteracted={this.props.userInteracted}
           placeholder={this.props.placeholder} />
-        <LaconaOptions
-          ref='options'
+        <Options
+          ref={c => this.options = c}
           outputs={this.props.outputs}
           selection={this.state.selection}
           execute={this.execute.bind(this)}

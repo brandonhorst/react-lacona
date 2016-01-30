@@ -1,6 +1,29 @@
 import _ from 'lodash'
 import React from 'react'
-import {findDOMNode} from 'react-dom'
+import { findDOMNode } from 'react-dom'
+
+const SPECIALCASES = {
+  URL: 0,
+  path: 4,
+  time: 0,
+  bookmark: 6,
+  path: 3,
+  artist: 0,
+  song: 3,
+  phrase: 4
+}
+
+export function hashArgument (str) {
+  const specialCase = SPECIALCASES[str]
+  if (specialCase != null) return specialCase
+
+  if (!str || str === '') return -1
+
+  return Math.abs(str.split('').reduce((a,b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0)
+    return a & a
+  }, 0)) % 7
+}
 
 class Placeholder extends React.Component {
   render () {
@@ -8,7 +31,7 @@ class Placeholder extends React.Component {
       <div className='placeholder'>
         {_.chain(this.props.item.placeholderTexts)
           .map((desc, index) => {
-            const className = `placeholder-component descriptor-${this.props.item.argument ? '' : _.kebabCase(desc) || desc.replace(' ', '-')}`
+            const className = `placeholder-component category-argument${hashArgument(desc)}`
             return [
               <div className='placeholder-component category-conjunction' key={index + ','}>, </div>,
               <div className={className} key={index}>{desc}</div>
@@ -37,7 +60,7 @@ class Placeholder extends React.Component {
 //   }
 // }
 
-export default class LaconaOption extends React.Component {
+export class Option extends React.Component {
   constructor () {
     super()
     this.updateCount = 0
@@ -70,8 +93,16 @@ export default class LaconaOption extends React.Component {
       desc.style.left = `${rect.left - wordsRect.left}px`
       // // RTL
       // desc.style.right = `${wordsRect.right - rect.right}px`
-      desc.style.top = `${rect.top - wordsRect.top + 6}px`
+      // 9 for Lacona, 6 for Lacona.io
+      desc.style.top = `${rect.top - wordsRect.top + 9}px`
     })
+  }
+
+  handleMouseMove (e) {
+    const coords = [e.pageX, e.pageY]
+    if (this.props.mouseMoved(coords)) {
+      this.props.select()
+    }
   }
 
   render () {
@@ -93,7 +124,7 @@ export default class LaconaOption extends React.Component {
           return <div className='descriptor' key={index}></div>
         } else {
           const first = _.first(itemGroup)
-          const className = `descriptor descriptor-${_.kebabCase(first.argument) || (first.argument && first.argument.replace(' ', '-'))} category-${first.category}`
+          const className = `descriptor category-argument${hashArgument(first.argument)} category-${first.category}`
           return <div className={className} key={index}>{first.argument}</div>
         }
       })
@@ -103,7 +134,7 @@ export default class LaconaOption extends React.Component {
 
     const words = _.map(itemGroups, (itemGroup, index) => {
       const first = _.first(itemGroup)
-      const className = `word descriptor-${_.kebabCase(first.argument) || (first.argument && first.argument.replace(' ', '-'))}`
+      const className = `word category-argument${hashArgument(first.argument)}`
 
       return (
         <div className={className} key={index}>
@@ -123,13 +154,14 @@ export default class LaconaOption extends React.Component {
     return (
       <div
         className={className}
-        onMouseOver={this.props.select}
+        onMouseOver={this.handleMouseMove.bind(this)}
         onClick={this.props.execute}
         onMouseDown={this.props.onMouseDown}
         onMouseUp={this.props.onMouseUp}>
         <div className='hint'>{this.props.hint}</div>
         <div className='descriptors' ref='descriptors'>{descriptors}</div>
         <div className='words' ref='words'>{words}</div>
+        {/*<div className='ellipsis'>{this.props.option.ellipsis ? '…' : ''}</div>*/}
       </div>
     )
   }

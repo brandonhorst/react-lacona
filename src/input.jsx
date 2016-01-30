@@ -1,7 +1,7 @@
 import React from 'react'
-import {findDOMNode} from 'react-dom'
+import { findDOMNode } from 'react-dom'
 
-export default class LaconaInput extends React.Component {
+export class Input extends React.Component {
   componentDidMount() {
     if (this.props.autoFocus) {
       findDOMNode(this).focus()
@@ -58,7 +58,7 @@ export default class LaconaInput extends React.Component {
       } else {
         return
       }
-    } else if (e.altKey && e.keyCode >= 49 && e.keyCode <= 57) {
+    } else if (e.altKey && !e.shiftKey && !e.metaKey && !e.ctrlKey && e.keyCode >= 49 && e.keyCode <= 57) {
       this.props.execute(e.keyCode - 49)
     } else {
       return
