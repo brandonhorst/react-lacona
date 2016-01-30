@@ -125,6 +125,10 @@ export class LaconaView extends React.Component {
     this.blurMatters = true
   }
 
+  focus () {
+    this.input.focus()
+  }
+
   blur () {
     this.input.blur()
   }
