@@ -142,8 +142,9 @@ export class Option extends React.Component {
             if (item.placeholder) {
               return <Placeholder item={item} key={index} />
             } else {
+              const text = item.fallthrough ? _.trimRight(item.text) : item.text
               const className = `word-component${item.input ? ' highlighted' : ''} category-${item.category}${item.fallthrough ? ' fallthrough' : ''}${item.decorator ? ' decorator' : ''}`
-              return <div className={className} key={index}>{item.text}</div>
+              return <div className={className} key={index}>{text}</div>
             }
           })}
         </div>
