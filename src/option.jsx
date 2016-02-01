@@ -3,14 +3,15 @@ import React from 'react'
 import { findDOMNode } from 'react-dom'
 
 const SPECIALCASES = {
-  URL: 0,
-  path: 4,
-  time: 0,
-  bookmark: 6,
-  path: 3,
-  artist: 0,
-  song: 3,
-  phrase: 4
+  URL: 1,
+  bookmark: 2,
+  song: 2,
+  contact: 5,
+  relationship: 6,
+  'phone number': 1,
+  'search engine': 4,
+  song: 4,
+  'reminder title': 1
 }
 
 export function hashArgument (str) {
@@ -22,7 +23,7 @@ export function hashArgument (str) {
   return Math.abs(str.split('').reduce((a,b) => {
     a = ((a << 5) - a) + b.charCodeAt(0)
     return a & a
-  }, 0)) % 7
+  }, 0)) % 8
 }
 
 class Placeholder extends React.Component {
