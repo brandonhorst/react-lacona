@@ -6,12 +6,9 @@ const SPECIALCASES = {
   URL: 1,
   bookmark: 2,
   song: 2,
-  contact: 5,
-  relationship: 6,
-  'phone number': 1,
-  'search engine': 4,
-  song: 4,
-  'reminder title': 1
+  contact: 1,
+  relationship: 3,
+  'reminder title': 0
 }
 
 export function hashArgument (str) {
@@ -143,9 +140,8 @@ export class Option extends React.Component {
             if (item.placeholder) {
               return <Placeholder item={item} key={index} />
             } else {
-              const text = item.fallthrough ? _.trimRight(item.text) : item.text
               const className = `word-component${item.input ? ' highlighted' : ''} category-${item.category}${item.fallthrough ? ' fallthrough' : ''}${item.decorator ? ' decorator' : ''}`
-              return <div className={className} key={index}>{text}</div>
+              return <div className={className} key={index}>{item.text}</div>
             }
           })}
         </div>
