@@ -43,15 +43,24 @@ export class Input extends React.Component {
     this.props.userInteracted()
     if (e.keyCode === 9) { // tab
       this.props.completeSelection()
-    } else if (e.keyCode === 38 || (e.ctrlKey && e.keyCode === 75)) { // up or ^k
+    } else if (
+      (!e.shiftKey && !e.metaKey && !e.altKey && !e.ctrlKey && e.keyCode === 38) ||
+      (!e.shiftKey && !e.metaKey && !e.altKey && e.ctrlKey && e.keyCode === 75)
+    ) { // up or ^k
       this.props.moveSelection(-1)
-    } else if (e.keyCode === 40 || (e.ctrlKey && e.keyCode === 74)) { // down or ^j
+    } else if (
+      (!e.shiftKey && !e.metaKey && !e.altKey && !e.ctrlKey && e.keyCode === 40) ||
+      (!e.shiftKey && !e.metaKey && !e.altKey && e.ctrlKey && e.keyCode === 74)
+    ) { //down or ^j
       this.props.moveSelection(1)
     } else if (e.keyCode === 13) { // return
       this.props.execute()
     } else if (e.keyCode === 27) { // escape
       this.props.cancel()
-    } else if (!e.shiftKey && (e.keyCode === 39 || (e.ctrlKey && e.keyCode === 76))) { //right or ^l
+    } else if (
+      (!e.shiftKey && !e.metaKey && !e.altKey && !e.ctrlKey && e.keyCode === 39) ||
+      (!e.shiftKey && !e.metaKey && !e.altKey && e.ctrlKey && e.keyCode === 76)
+    ) { //right or ^l
       const node = findDOMNode(this.refs.input)
       if ((node.selectionStart === node.selectionEnd) && (node.selectionStart === this.props.userInput.length)) {
         this.props.completeSelection()
@@ -62,7 +71,10 @@ export class Input extends React.Component {
           node.setSelectionRange(node.selectionEnd, node.selectionEnd)
         }
       }
-    } else if (!e.shiftKey && (e.keyCode === 37 || (e.ctrlKey && e.keyCode === 72))) { // left or ^h
+    } else if (
+      (!e.shiftKey && !e.metaKey && !e.altKey && !e.ctrlKey && e.keyCode === 37) ||
+      (!e.shiftKey && !e.metaKey && !e.altKey && e.ctrlKey && e.keyCode === 72)
+    ) { //left or ^h
       const node = findDOMNode(this.refs.input)
       if ((node.selectionStart === node.selectionEnd) && (node.selectionStart >= 1)) {
         node.setSelectionRange(node.selectionStart - 1, node.selectionStart - 1)
