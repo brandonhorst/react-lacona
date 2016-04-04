@@ -36,7 +36,7 @@ class Placeholder extends React.Component {
             ]
           })
           .flatten()
-          .rest()
+          .tail()
           .value()
         }
       </div>
