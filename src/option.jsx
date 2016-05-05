@@ -43,20 +43,6 @@ class Placeholder extends React.Component {
     )
   }
 }
-//
-// function getCorners(elem, parentBoundingRect) {
-//   const rects = elem.getClientRects()
-//   const bounds = elem.getBoundingClientRect()
-//
-//   return {
-//     topLeft: rects[0].left - parentBoundingRect.left,
-//     topTop: rects[0].top - parentBoundingRect.top,
-//     bottomRight: _.last(rects).right - parentBoundingRect.left,
-//     bottomTop: _.last(rects).top - parentBoundingRect.top,
-//     boundRight: bounds.right - parentBoundingRect.left,
-//     wrapped: rects.length > 1
-//   }
-// }
 
 export class Option extends React.Component {
   constructor () {
@@ -149,6 +135,8 @@ export class Option extends React.Component {
     })
 
     const className = `option${(this.props.selected ? ' selected' : '')}`
+
+    const qualifiers = this.props.option.qualifiers
     return (
       <div
         className={className}
@@ -159,6 +147,12 @@ export class Option extends React.Component {
         <div className='hint'>{this.props.hint}</div>
         <div className='descriptors' ref='descriptors'>{descriptors}</div>
         <div className='words' ref='words'>{words}</div>
+        <div className='qualifiers'>
+          {_.map(this.props.option.qualifiers, (qualifier) => {
+            return <div className='qualifier'>{qualifier}</div>
+          })}
+        </div>
+
         {/*<div className='ellipsis'>{this.props.option.ellipsis ? '…' : ''}</div>*/}
       </div>
     )
