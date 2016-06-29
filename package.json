@@ -6,6 +6,7 @@
   "scripts": {
     "pretest": "babel test --out-dir tmp",
     "test": "mocha tmp",
+    "prepublish": "npm run build",
     "build": "babel src --out-dir lib",
     "validate": "npm run build && npm run test",
     "build:demo": "mkdir -p demo/build && browserify demo/script.js -t babelify -o demo/build/script.js"
@@ -34,10 +35,10 @@
     "babelify": "^7.3.0",
     "browserify": "^13.0.0",
     "chai": "^3.5.0",
-    "jsdom": "^8.5.0",
+    "jsdom": "^9.2.1",
     "lacona": "^0.39.0",
     "lacona-phrase": "^0.9.1",
-    "lacona-utils": "0.1.0",
+    "lacona-utils": "0.2.0",
     "mocha": "^2.4.5",
     "normalize-css": "^2.3.1",
     "sinon": "^1.17.4",

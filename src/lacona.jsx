@@ -28,16 +28,29 @@ export class LaconaView extends React.Component {
     this.setState({selection: hasOutputs ? bound(this.state.selection, nextProps.outputs.length) : -1})
   }
 
+  handleScroll () {
+    const optionsDOM = findDOMNode(this.options)
+    const preview = document.getElementsByClassName('preview')[0]
+    if (preview) {
+      preview.style.marginTop = `-${optionsDOM.scrollTop + 5}px`
+    }
+  }
+
   componentDidMount () {
+    const optionsDOM = findDOMNode(this.options)
+    optionsDOM.addEventListener('scroll', this.handleScroll.bind(this))
+
     this.componentDidUpdate()
   }
 
   componentDidUpdate () {
+    this.handleScroll()
     if (this.state.selection > -1 && !this.setByMouse) {
       const optionsDOM = findDOMNode(this.options)
       const optionsRect = optionsDOM.getBoundingClientRect()
       const option = this.options.getOption(this.state.selection)
       if (option) {
+        // scroll visible option into view
         const selectedRect = findDOMNode(option).getBoundingClientRect()
         if (selectedRect.top < optionsRect.top) {
           optionsDOM.scrollTop -= (optionsRect.top - selectedRect.top)

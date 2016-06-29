@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import { findDOMNode } from 'react-dom'
 
 import { Option } from './option'
 
@@ -47,6 +48,6 @@ export class Options extends React.Component {
         hint={hint}  />
     })
 
-    return divs.length ? <div className='options' onMouseMove={this.handleMouseMove.bind(this)}>{divs}</div> : null
+    return divs.length ? <div className='options' onMouseMove={this.handleMouseMove.bind(this)}>{divs}</div> : <div className='options'></div>
   }
 }

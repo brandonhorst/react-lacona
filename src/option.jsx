@@ -44,6 +44,14 @@ class Placeholder extends React.Component {
   }
 }
 
+function Preview (props) {
+  return (
+    <div className='preview'>
+      {props.object.value}
+    </div>
+  )
+}
+
 export class Option extends React.Component {
   constructor () {
     super()
@@ -57,6 +65,7 @@ export class Option extends React.Component {
   componentDidUpdate (nextProps = {}) {
     const words = findDOMNode(this.refs.words)
     const descs = findDOMNode(this.refs.descriptors)
+    const preview = findDOMNode(this.refs.preview)
     const wordsRect = words.getBoundingClientRect()
 
     const all = _.zip(_.toArray(words.children), _.toArray(descs.children))
@@ -125,6 +134,9 @@ export class Option extends React.Component {
           {_.map(itemGroup, (item, index) => {
             if (item.placeholder) {
               return <Placeholder item={item} key={index} />
+            } else if (item.category === 'image') {
+              const className = `word-component${item.input ? ' highlighted' : ''} category-${item.category}${item.fallthrough ? ' fallthrough' : ''}${item.decorator ? ' decorator' : ''}`
+              return <img src={item.text} className={className} />
             } else {
               const className = `word-component${item.input ? ' highlighted' : ''} category-${item.category}${item.fallthrough ? ' fallthrough' : ''}${item.decorator ? ' decorator' : ''}`
               return <div className={className} key={index}>{item.text}</div>
@@ -144,6 +156,9 @@ export class Option extends React.Component {
         onClick={this.props.execute}
         onMouseDown={this.props.onMouseDown}
         onMouseUp={this.props.onMouseUp}>
+        {this.props.selected && this.props.option.preview
+          ? <Preview object={this.props.option.preview} />
+          : null}
         <div className='hint'>{this.props.hint}</div>
         <div className='descriptors' ref='descriptors'>{descriptors}</div>
         <div className='words' ref='words'>{words}</div>
