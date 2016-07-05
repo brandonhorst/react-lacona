@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import Preview from './preview'
 import { findDOMNode } from 'react-dom'
 
 const SPECIALCASES = {
@@ -9,6 +10,47 @@ const SPECIALCASES = {
   contact: 1,
   relationship: 3,
   'reminder title': 0
+}
+
+function getAnnotations (annotations, wordIndex) {
+  return _.chain(annotations)
+    .filter(annotation => annotation.start === wordIndex)
+    .map((annotation, aIndex) => {
+      switch (annotation.value.type) {
+        case 'icon': 
+          return (
+            <div
+              className='annotation icon-annotation'
+              key={aIndex}
+              style={{backgroundImage: `url(lacona-icon:${encodeURI(annotation.value.path)})`}}>
+            </div>
+          )
+        case 'contact':
+          return (
+            <div
+              className='annotation contact-icon-annotation'
+              key={aIndex}
+              style={{backgroundImage: `url(lacona-contact-icon:${encodeURI(annotation.value.id)})`}}>
+            </div>
+          )
+      }
+    })
+    .filter()
+    .value()
+}
+
+function getQualifiers (qualifiers, wordIndex) {
+  return _.chain(qualifiers)
+    .filter(qualifier => qualifier.end - 1 === wordIndex)
+    .map((qualifier, qIndex) => {
+      return (
+        <div className='qualifier' key={qIndex}>
+          {qualifier.value}
+        </div>
+      )
+    })
+    .value()
+
 }
 
 export function hashArgument (str) {
@@ -27,7 +69,7 @@ class Placeholder extends React.Component {
   render () {
     return (
       <div className='placeholder'>
-        {_.chain(this.props.item.placeholderTexts)
+        {_.chain(this.props.word.placeholderTexts)
           .map((desc, index) => {
             const className = `placeholder-component category-argument${hashArgument(desc)}`
             return [
@@ -42,14 +84,6 @@ class Placeholder extends React.Component {
       </div>
     )
   }
-}
-
-function Preview (props) {
-  return (
-    <div className='preview'>
-      {props.object.value}
-    </div>
-  )
 }
 
 export class Option extends React.Component {
@@ -99,48 +133,46 @@ export class Option extends React.Component {
   }
 
   render () {
-    const itemGroups = _.chain(this.props.option.words)
-      .reduce((acc, item) => {
-        const last = _.last(_.last(acc))
-        if (last && last.argument === item.argument) {
-          _.last(acc).push(item)
-        } else {
-          acc.push([item]);
-        }
-        return acc
-      }, [])
-      .value()
+    const argumentGroups = _.map(this.props.option.arguments, (argument) => ({
+      argument,
+      words: this.props.option.words.slice(argument.start, argument.end)
+    }))
 
-    const descriptors = _.chain(itemGroups)
-      .map((itemGroup, index) => {
-        if (itemGroup.length === 1 && itemGroup[0].placeholder) {
-          return <div className='descriptor' key={index}></div>
-        } else {
-          const first = _.first(itemGroup)
-          const className = `descriptor category-argument${hashArgument(first.argument)} category-${first.category}`
-          return <div className={className} key={index}>{first.argument}</div>
-        }
+    const descriptors = _.chain(argumentGroups)
+      .map(({argument}, index) => {
+        const className = `descriptor category-argument${hashArgument(argument.value)}`
+        return <div className={className} key={index}>{argument.value}</div>
       })
-      // .map(elem => [<div className='spacer-left' />, elem, <div className='spacer-right' />])
       .flatten()
       .value()
 
-    const words = _.map(itemGroups, (itemGroup, index) => {
-      const first = _.first(itemGroup)
-      const className = `word category-argument${hashArgument(first.argument)}`
+    const words = _.map(argumentGroups, ({words, argument}, index) => {
+      const className = `word category-argument${hashArgument(argument.value)}`
 
       return (
         <div className={className} key={index}>
-          {_.map(itemGroup, (item, index) => {
-            if (item.placeholder) {
-              return <Placeholder item={item} key={index} />
-            } else if (item.category === 'image') {
-              const className = `word-component${item.input ? ' highlighted' : ''} category-${item.category}${item.fallthrough ? ' fallthrough' : ''}${item.decorator ? ' decorator' : ''}`
-              return <img src={item.text} className={className} />
-            } else {
-              const className = `word-component${item.input ? ' highlighted' : ''} category-${item.category}${item.fallthrough ? ' fallthrough' : ''}${item.decorator ? ' decorator' : ''}`
-              return <div className={className} key={index}>{item.text}</div>
+          {_.map(words, (word, index) => {
+            const thisWordOutput = []
+            const trueIndex = argument.start + index
+            const annotations = getAnnotations(this.props.option.annotations, trueIndex)
+            const qualifiers = getQualifiers(this.props.option.qualifiers, trueIndex)
+
+            if (annotations.length) {
+              thisWordOutput.push(<div className='annotations'>{annotations}</div>)
             }
+
+            if (word.placeholder) {
+              thisWordOutput.push(<Placeholder word={word} key={index} />)
+            } else {
+              const className = `word-component${word.input ? ' highlighted' : ''} category-${word.category}${word.fallthrough ? ' fallthrough' : ''}${word.decorator ? ' decorator' : ''}`
+              thisWordOutput.push(<div className={className} key={index}>{word.text}</div>)
+            }
+
+            if (qualifiers.length) {
+              thisWordOutput.push(<div className='qualifiers'>{qualifiers}</div>)
+            }
+
+            return thisWordOutput
           })}
         </div>
       )
@@ -162,12 +194,6 @@ export class Option extends React.Component {
         <div className='hint'>{this.props.hint}</div>
         <div className='descriptors' ref='descriptors'>{descriptors}</div>
         <div className='words' ref='words'>{words}</div>
-        <div className='qualifiers'>
-          {_.map(this.props.option.qualifiers, (qualifier) => {
-            return <div className='qualifier'>{qualifier}</div>
-          })}
-        </div>
-
         {/*<div className='ellipsis'>{this.props.option.ellipsis ? '…' : ''}</div>*/}
       </div>
     )

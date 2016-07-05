@@ -30,7 +30,7 @@ export class LaconaView extends React.Component {
 
   handleScroll () {
     const optionsDOM = findDOMNode(this.options)
-    const preview = document.getElementsByClassName('preview')[0]
+    const preview = document.getElementsByClassName('preview-wrapper')[0]
     if (preview) {
       preview.style.marginTop = `-${optionsDOM.scrollTop + 5}px`
     }

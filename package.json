@@ -45,6 +45,7 @@
     "sinon-chai": "^2.8.0"
   },
   "dependencies": {
+    "katex": "^0.6.0",
     "lodash": "^4.11.2",
     "react": "^15.0.2"
   },
