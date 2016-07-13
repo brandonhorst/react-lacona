@@ -33,6 +33,12 @@ function getAnnotations (annotations, wordIndex) {
               style={{backgroundImage: `url(lacona-contact-icon:${encodeURI(annotation.value.id)})`}}>
             </div>
           )
+        case 'text':
+          return (
+            <div className='annotation text-annotation' key={aIndex}>
+              {annotation.value.value}
+            </div>
+          )
       }
     })
     .filter()

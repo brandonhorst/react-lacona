@@ -48,6 +48,13 @@ export class Options extends React.Component {
         hint={hint}  />
     })
 
-    return divs.length ? <div className='options' onMouseMove={this.handleMouseMove.bind(this)}>{divs}</div> : <div className='options'></div>
+    return divs.length
+      ? <div
+          className='options'
+          onMouseMove={this.handleMouseMove.bind(this)}
+          onContextMenu={e => e.preventDefault()}>
+          {divs}
+        </div>
+      : <div className='options'></div>
   }
 }
