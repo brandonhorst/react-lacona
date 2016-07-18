@@ -194,13 +194,15 @@ export class Option extends React.Component {
         onClick={this.props.execute}
         onMouseDown={this.props.onMouseDown}
         onMouseUp={this.props.onMouseUp}>
-        {this.props.selected && this.props.option.preview
-          ? <Preview object={this.props.option.preview} />
-          : null}
+        <div className='option-text'>
+          {this.props.selected && this.props.option.preview
+            ? <Preview object={this.props.option.preview} />
+            : null}
+          <div className='descriptors' ref='descriptors'>{descriptors}</div>
+          <div className='words' ref='words'>{words}</div>
+          {/*<div className='ellipsis'>{this.props.option.ellipsis ? '…' : ''}</div>*/}
+        </div>
         <div className='hint'>{this.props.hint}</div>
-        <div className='descriptors' ref='descriptors'>{descriptors}</div>
-        <div className='words' ref='words'>{words}</div>
-        {/*<div className='ellipsis'>{this.props.option.ellipsis ? '…' : ''}</div>*/}
       </div>
     )
   }
