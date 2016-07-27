@@ -8,8 +8,7 @@ const SPECIALCASES = {
   bookmark: 2,
   song: 2,
   contact: 1,
-  relationship: 3,
-  'reminder title': 0
+  relationship: 3
 }
 
 function getAnnotations (annotations, wordIndex) {
@@ -105,7 +104,6 @@ export class Option extends React.Component {
   componentDidUpdate (nextProps = {}) {
     const words = findDOMNode(this.refs.words)
     const descs = findDOMNode(this.refs.descriptors)
-    const preview = findDOMNode(this.refs.preview)
     const wordsRect = words.getBoundingClientRect()
 
     const all = _.zip(_.toArray(words.children), _.toArray(descs.children))
