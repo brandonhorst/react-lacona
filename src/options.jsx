@@ -48,9 +48,11 @@ export class Options extends React.Component {
         hint={hint}  />
     })
 
+    const notEmpty = !!this.props.outputs.length
+
     return divs.length
       ? <div
-          className='options'
+          className={`options ${notEmpty ? 'not-empty' : ''}`}
           onMouseMove={this.handleMouseMove.bind(this)}
           onContextMenu={e => e.preventDefault()}>
           {divs}

@@ -93,7 +93,7 @@ export class Input extends React.Component {
   render() {
     return <input
       type='text'
-      className='input'
+      className={`input ${this.props.empty ? 'empty' : ''}`}
       ref='input'
       tabIndex={this.props.tabIndex}
       autoCorrect={false}

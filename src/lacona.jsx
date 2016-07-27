@@ -31,8 +31,12 @@ export class LaconaView extends React.Component {
   handleScroll () {
     const optionsDOM = findDOMNode(this.options)
     const preview = document.getElementsByClassName('preview-wrapper')[0]
-    if (preview) {
-      preview.style.marginTop = `-${optionsDOM.scrollTop + (preview.clientHeight / 2) - 12}px`
+    const option = this.options.getOption(this.state.selection)
+    if (option && preview) {
+      // scroll visible option into view
+      const optionDOM = findDOMNode(option)
+      const paddingTop = getComputedStyle(optionDOM).getPropertyValue('padding-top')
+      preview.style.marginTop = `${-optionsDOM.scrollTop - (preview.clientHeight / 2) - parseInt(paddingTop) + (optionDOM.clientHeight / 2)}px`
     }
   }
 
@@ -163,6 +167,7 @@ export class LaconaView extends React.Component {
           onFocus={this.onFocus.bind(this)}
           onBlur={this.onBlur.bind(this)}
           userInteracted={this.props.userInteracted}
+          empty={!this.props.outputs.length}
           placeholder={this.props.placeholder} />
         <Options
           ref={c => this.options = c}
