@@ -11,25 +11,45 @@ const SPECIALCASES = {
   relationship: 3
 }
 
+function getCategories (categories, wordIndex) {
+  return _.chain(categories)
+    .filter(category => category.start <= wordIndex && category.end > wordIndex)
+    .map(category => `category-${category.value}`)
+    .filter()
+    .value()
+}
+
 function getAnnotations (annotations, wordIndex) {
   return _.chain(annotations)
     .filter(annotation => annotation.start === wordIndex)
     .map((annotation, aIndex) => {
+      let identifier
       switch (annotation.value.type) {
         case 'icon': 
+          identifier = annotation.value.value || annotation.value.path
           return (
             <div
               className='annotation icon-annotation'
               key={aIndex}
-              style={{backgroundImage: `url(lacona-icon:${encodeURI(annotation.value.path)})`}}>
+              style={{backgroundImage: `url(lacona-icon:${encodeURI(identifier)})`}}>
             </div>
           )
         case 'contact':
+          identifier = annotation.value.value || annotation.value.id
           return (
             <div
               className='annotation contact-icon-annotation'
               key={aIndex}
-              style={{backgroundImage: `url(lacona-contact-icon:${encodeURI(annotation.value.id)})`}}>
+              style={{backgroundImage: `url(lacona-contact-icon:${encodeURI(identifier)})`}}>
+            </div>
+          )
+        case 'image':
+          identifier = annotation.value.value || annotation.value.path
+          return (
+            <div
+              className='annotation image-annotation'
+              key={aIndex}
+              style={{backgroundImage: `url(lacona-image:${encodeURI(identifier)})`}}>
             </div>
           )
         case 'text':
@@ -160,6 +180,7 @@ export class Option extends React.Component {
             const trueIndex = argument.start + index
             const annotations = getAnnotations(this.props.option.annotations, trueIndex)
             const qualifiers = getQualifiers(this.props.option.qualifiers, trueIndex)
+            const categories = getCategories(this.props.option.categories, trueIndex)
 
             if (annotations.length) {
               thisWordOutput.push(<div className='annotations'>{annotations}</div>)
@@ -168,7 +189,7 @@ export class Option extends React.Component {
             if (word.placeholder) {
               thisWordOutput.push(<Placeholder word={word} key={index} />)
             } else {
-              const className = `word-component${word.input ? ' highlighted' : ''} category-${word.category}${word.fallthrough ? ' fallthrough' : ''}${word.decorator ? ' decorator' : ''}`
+              const className = `word-component${word.input ? ' highlighted' : ''} ${categories} ${word.fallthrough ? 'fallthrough' : ''} ${word.decorator ? 'decorator' : ''}`
               thisWordOutput.push(<div className={className} key={index}>{word.text}</div>)
             }
 
