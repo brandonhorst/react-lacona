@@ -2,14 +2,7 @@ import _ from 'lodash'
 import React from 'react'
 import Preview from './preview'
 import { findDOMNode } from 'react-dom'
-
-const SPECIALCASES = {
-  URL: 1,
-  bookmark: 2,
-  song: 2,
-  contact: 1,
-  relationship: 3
-}
+import hashArgument from 'colorize-lacona-argument'
 
 function getCategories (categories, wordIndex) {
   return _.chain(categories)
@@ -76,18 +69,6 @@ function getQualifiers (qualifiers, wordIndex) {
     })
     .value()
 
-}
-
-export function hashArgument (str) {
-  const specialCase = SPECIALCASES[str]
-  if (specialCase != null) return specialCase
-
-  if (!str || str === '') return -1
-
-  return Math.abs(str.split('').reduce((a,b) => {
-    a = ((a << 5) - a) + b.charCodeAt(0)
-    return a & a
-  }, 0)) % 8
 }
 
 class Placeholder extends React.Component {

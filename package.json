@@ -45,6 +45,7 @@
     "sinon-chai": "^2.8.0"
   },
   "dependencies": {
+    "colorize-lacona-argument": "^0.1.0",
     "katex": "^0.6.0",
     "lodash": "^4.13.1",
     "react": "^15.2.1"
