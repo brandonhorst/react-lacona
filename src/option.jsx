@@ -45,6 +45,15 @@ function getAnnotations (annotations, wordIndex) {
               style={{backgroundImage: `url(lacona-image:${encodeURI(identifier)})`}}>
             </div>
           )
+        case 'url':
+          identifier = annotation.value.value || annotation.value.path
+          return (
+            <div
+              className='annotation url-annotation'
+              key={aIndex}
+              style={{backgroundImage: `url(${encodeURI(identifier)})`}}>
+            </div>
+          )
         case 'text':
           return (
             <div className='annotation text-annotation' key={aIndex}>
@@ -131,10 +140,12 @@ export class Option extends React.Component {
   }
 
   handleMouseMove (e) {
-    const coords = [e.pageX, e.pageY]
-    if (this.props.mouseMoved(coords)) {
+    if (!this.props.selected) {
       this.props.select()
     }
+    // const coords = [e.pageX, e.pageY]
+    // if (this.props.mouseMoved(coords)) {
+    // }
   }
 
   render () {
@@ -190,7 +201,7 @@ export class Option extends React.Component {
     return (
       <div
         className={className}
-        onMouseOver={this.handleMouseMove.bind(this)}
+        onMouseEnter={this.handleMouseMove.bind(this)}
         onClick={this.props.execute}
         onMouseDown={this.props.onMouseDown}
         onMouseUp={this.props.onMouseUp}>

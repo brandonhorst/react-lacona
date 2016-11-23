@@ -15,23 +15,30 @@ export class Options extends React.Component {
     return this.options[index]
   }
 
-  mouseMoved (coords) {
-    return coords[0] !== this.coords[0] || coords[1] !== this.coords[1]
-  }
+  // mouseMoved (coords) {
+  //   return coords[0] !== this.coords[0] || coords[1] !== this.coords[1]
+  // }
 
-  handleMouseMove (e) {
-    this.coords = [e.pageX, e.pageY]
-  }
+  // handleMouseMove (e) {
+  //   this.coords = [e.pageX, e.pageY]
+  // }
 
   render() {
     const divs = this.props.outputs.map((option, index) => {
       const select = () => this.props.select(index)
       const execute = () => this.props.execute(index)
 
+      let selectKeyGlyph = ''
+      switch (this.props.selectKey) {
+        case 'ctrl': selectKeyGlyph = '⌃'; break
+        case 'alt': selectKeyGlyph = '⌥'; break
+        case 'cmd': selectKeyGlyph = '⌘'; break
+      }
+
       const hint = this.props.showHints ? (
         index === this.props.selection ?
           '↩' :
-          (index < 9 ? `⌥${index + 1}` : '')
+          (index < 9 ? `${selectKeyGlyph}${index + 1}` : '')
         ) : ''
 
 
@@ -39,7 +46,7 @@ export class Options extends React.Component {
         ref={c => this.options[index] = c}
         key={index}
         selected={index === this.props.selection}
-        mouseMoved={this.mouseMoved.bind(this)}
+        // mouseMoved={this.mouseMoved.bind(this)}
         option={option}
         select={select}
         execute={execute}
@@ -53,7 +60,7 @@ export class Options extends React.Component {
     return divs.length
       ? <div
           className={`options ${notEmpty ? 'not-empty' : ''}`}
-          onMouseMove={this.handleMouseMove.bind(this)}
+          // onMouseMove={this.handleMouseMove.bind(this)}
           onContextMenu={e => e.preventDefault()}>
           {divs}
         </div>

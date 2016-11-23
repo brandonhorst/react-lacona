@@ -40,7 +40,6 @@ export class Input extends React.Component {
   }
 
   keyDown(e) {
-    this.props.userInteracted()
     if (e.keyCode === 9) { // tab
       this.props.completeSelection()
     } else if (
@@ -81,7 +80,11 @@ export class Input extends React.Component {
       } else {
         node.setSelectionRange(node.selectionStart, node.selectionStart)
       }
-    } else if (e.altKey && !e.shiftKey && !e.metaKey && !e.ctrlKey && e.keyCode >= 49 && e.keyCode <= 57) {
+    } else if (e.keyCode >= 49 && e.keyCode <= 57 && (
+      (this.props.selectKey === 'ctrl' && !e.altKey && !e.metaKey && e.ctrlKey) ||
+      (this.props.selectKey === 'alt' && e.altKey && !e.metaKey && !e.ctrlKey) ||
+      (this.props.selectKey === 'cmd' && !e.altKey && e.metaKey && !e.ctrlKey)
+    )) {
       this.props.execute(e.keyCode - 49)
     } else {
       return
@@ -104,7 +107,6 @@ export class Input extends React.Component {
       onKeyDown={this.keyDown.bind(this)}
       onFocus={this.props.onFocus}
       onBlur={this.props.onBlur}
-      onClick={this.props.userInteracted}
       placeholder={this.props.placeholder} />
   }
 }

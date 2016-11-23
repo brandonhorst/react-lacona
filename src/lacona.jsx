@@ -63,7 +63,6 @@ export class LaconaView extends React.Component {
         }
       }
     }
-    this.props.change()
   }
 
   completeSelection (index = this.state.selection) {
@@ -74,8 +73,6 @@ export class LaconaView extends React.Component {
         .map('text')
         .join('')
         .value()
-
-      this.props.clearPrefix()
 
       this.update(newString)
     }
@@ -135,11 +132,11 @@ export class LaconaView extends React.Component {
 
   mouseDown () {
     this.blurMatters = false
-    this.props.userInteracted()
   }
 
   mouseUp () {
     this.blurMatters = true
+    this.focus()
   }
 
   focus () {
@@ -164,18 +161,19 @@ export class LaconaView extends React.Component {
           userInput={this.props.userInput}
           execute={this.execute.bind(this)}
           cancel={this.cancel.bind(this)}
+          selectKey={this.props.selectKey}
           onFocus={this.onFocus.bind(this)}
           onBlur={this.onBlur.bind(this)}
-          userInteracted={this.props.userInteracted}
           empty={!this.props.outputs.length}
           placeholder={this.props.placeholder} />
         <Options
           ref={c => this.options = c}
           outputs={this.props.outputs}
+          selectKey={this.props.selectKey}
           selection={this.state.selection}
           execute={this.execute.bind(this)}
           select={this.select.bind(this)}
-          showHints={this.state.showHints}
+          showHints={this.props.selectKey !== 'none'}
           onMouseDown={this.mouseDown.bind(this)}
           onMouseUp={this.mouseUp.bind(this)} />
       </div>
@@ -187,11 +185,7 @@ LaconaView.defaultProps = {
   outputs: [],
   update () {},
   cancel () {},
-  change () {},
   execute () {},
-  select () {},
   onFocus () {},
-  onBlur () {},
-  userInteracted () {},
-  clearPrefix () {}
+  onBlur () {}
 }
